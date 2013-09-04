@@ -127,6 +127,7 @@ function = { cdhist_history "$@"; }
 
 if [ -f $cdhistlist ]; then
 	initialize
+	cd $HOME >/dev/null
 	return 0
 else
 	cdhist_reset
