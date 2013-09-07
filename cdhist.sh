@@ -9,11 +9,11 @@
 
 [ "$BASH_VERSION" ] || return 1
 
-declare -i CDHIST_CDQMAX=10
 declare -r cdhistlist=~/.cdhistlog
+declare -i CDHIST_CDQMAX=10
 declare -a CDHIST_CDQ
 
-function initialize() {
+function cdhist_initialize() {
 	OLDIFS=$IFS
 	IFS=$'\n'
 	
@@ -116,20 +116,22 @@ function cdhist_back() {
 	fi
 }
 
-#function cd { cdhist_cd "$@" && ls; }
-#function + { cdhist_forward "$@" && ls; }
-#function - { cdhist_back "$@" && ls; }
-#function = { cdhist_history "$@" ; [ $# -eq 0 ] || ls; }
 function cd { cdhist_cd "$@"; }
-function + { cdhist_forward "$@"; }
-function - { cdhist_back "$@"; }
-function = { cdhist_history "$@"; }
+function +  { cdhist_forward "$@"; }
+function -  { cdhist_back "$@"; }
+function =  { cdhist_history "$@"; }
+
+function cdhist_complement() {
+	echo ''
+	cdhist_history
+	return 0
+}
+
+complete -F cdhist_complement =
 
 if [ -f $cdhistlist ]; then
-	initialize
+	cdhist_initialize
 	cd $HOME >/dev/null
-	return 0
 else
 	cdhist_reset
-	return 0
 fi
