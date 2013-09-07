@@ -13,7 +13,7 @@ It's more convenient than using directory stacks when you walk around two or thr
 	$ git clone git://github.com/b4b4r07/cdhist.git
 	$ make install
 
-**Enable bashmark.sh requires restart your bash**
+**Enable cdhist.sh requires restart your bash**
 
 # Usage
 
