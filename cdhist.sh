@@ -19,7 +19,7 @@ declare -r cdhistlist=~/.cdhistlog
 declare -i CDHIST_CDQMAX=10
 declare -a CDHIST_CDQ
 
-function cdhist_initialize() {
+function _cdhist_initialize() {
 	OLDIFS=$IFS
 	IFS=$'\n'
 	
@@ -39,19 +39,19 @@ function cdhist_initialize() {
 	IFS=$OLDIFS
 }
 
-function cdhist_reset() {
+function _cdhist_reset() {
 	CDHIST_CDQ=( "$PWD" )
 }
 
-function cdhist_disp() {
+function _cdhist_disp() {
 	echo "$*" | sed "s $HOME ~ g"
 }
 
-function cdhist_add() {
+function _cdhist_add() {
 	CDHIST_CDQ=( "$1" "${CDHIST_CDQ[@]}" )
 }
 
-function cdhist_del() {
+function _cdhist_del() {
 	local i=${1:-0}
 	if [ ${#CDHIST_CDQ[@]} -le 1 ]; then return; fi
 	for ((; i<${#CDHIST_CDQ[@]}-1; i++)); do
@@ -60,7 +60,7 @@ function cdhist_del() {
 	unset CDHIST_CDQ[$i]
 }
 
-function cdhist_rot() {
+function _cdhist_rot() {
 	local i q
 	for ((i=0; i<$1; i++)); do
 		q[$i]="${CDHIST_CDQ[$(((i+$1+$2)%$1))]}"
@@ -70,74 +70,73 @@ function cdhist_rot() {
 	done
 }
 
-function cdhist_cd() {
+function _cdhist_cd() {
 	local i f=0
-	builtin cd "$@" && ls && pwd >>$cdhistlist || return 1
+	builtin cd "$@" && pwd >>$cdhistlist || return 1
 	for ((i=0; i<${#CDHIST_CDQ[@]}; i++)); do
 		if [ "${CDHIST_CDQ[$i]}" = "$PWD" ]; then f=1; break; fi
 	done
 	if [ $f -eq 1 ]; then
-		cdhist_rot $((i+1)) -1
+		_cdhist_rot $((i+1)) -1
 	elif [ ${#CDHIST_CDQ[@]} -lt $CDHIST_CDQMAX ]; then
-		cdhist_add "$PWD"
+		_cdhist_add "$PWD"
 	else
-		cdhist_rot ${#CDHIST_CDQ[@]} -1
+		_cdhist_rot ${#CDHIST_CDQ[@]} -1
 		CDHIST_CDQ[0]="$PWD"
 	fi
 }
 
-function cdhist_history() {
+function _cdhist_history() {
 	local i d
 	[ "$1" -eq 0 ] 2>/dev/null
 	[ $? -ge 2 -a "$1" != "" ] && return 1
 	if [ $# -eq 0 ]; then
 		for ((i=${#CDHIST_CDQ[@]}-1; 0<=i; i--)); do
-			cdhist_disp " $i ${CDHIST_CDQ[$i]}"
+			_cdhist_disp " $i ${CDHIST_CDQ[$i]}"
 		done
 	elif [ "$1" -lt ${#CDHIST_CDQ[@]} ]; then
 		d=${CDHIST_CDQ[$1]}
-		if builtin cd "$d" && ls && pwd >>$cdhistlist; then
-			cdhist_rot $(($1+1)) -1
+		if builtin cd "$d" && pwd >>$cdhistlist; then
+			_cdhist_rot $(($1+1)) -1
 		else
-			cdhist_del $1
+			_cdhist_del $1
 		fi
 	fi
 }
 
-function cdhist_forward() {
-	cdhist_rot ${#CDHIST_CDQ[@]} -${1:-1}
+function _cdhist_forward() {
+	_cdhist_rot ${#CDHIST_CDQ[@]} -${1:-1}
 	if ! builtin cd "${CDHIST_CDQ[0]}"; then
-		cdhist_del 0
+		_cdhist_del 0
 	else
-		ls && pwd >>$cdhistlist
+		pwd >>$cdhistlist
 	fi
 }
 
-function cdhist_back() {
-	cdhist_rot ${#CDHIST_CDQ[@]} ${1:-1}
+function _cdhist_back() {
+	_cdhist_rot ${#CDHIST_CDQ[@]} ${1:-1}
 	if ! builtin cd "${CDHIST_CDQ[0]}"; then
-		cdhist_del 0
+		_cdhist_del 0
 	else
-		ls && pwd >>$cdhistlist
+		pwd >>$cdhistlist
 	fi
 }
 
-function cd { cdhist_cd "$@"; }
-function +  { cdhist_forward "$@"; }
-function -  { cdhist_back "$@"; }
-function =  { cdhist_history "$@"; }
+function cd { _cdhist_cd "$@"; }
+function +  { _cdhist_forward "$@"; }
+function -  { _cdhist_back "$@"; }
+function =  { _cdhist_history "$@"; }
 
-function cdhist_complement() {
-	echo ''
-	cdhist_history
+function _cdhist_complement() {
+	_cdhist_history
 	return 0
 }
 
-complete -F cdhist_complement =
+complete -F _cdhist_complement =
 
 if [ -f $cdhistlist ]; then
-	cdhist_initialize
+	_cdhist_initialize
 	cd $HOME >/dev/null
 else
-	cdhist_reset
+	_cdhist_reset
 fi
