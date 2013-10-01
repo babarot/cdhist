@@ -1,11 +1,17 @@
-###  Name:     cdhist.sh for bash
-###  Author:   b4b4r07 <b4b4r07@gmail.com>
-###  URL:      https://github.com/b4b4r07/cdhist
-###            (see this url for latest release & screenshots)
-###  License:  OSI approved MIT license
-###  Created:  2013 Sep 03
-###  Modified: 
-###
+#   @(#) Directory history manager on bash.
+#
+#   Name:     cdhist.sh
+#   Author:   b4b4r07 <b4b4r07@gmail.com>
+#   URL:      https://github.com/b4b4r07/cdhist
+#             (see this url for latest release & screenshots)
+#   License:  OSI approved MIT license
+#   Created:  Tue Sep 3 01:33:53 2013 +0900
+#   Modified: 
+#
+#   Copyright (c) 2013, b4b4r07
+#   All rights reserved.
+#
+###################################################################################################################
 
 [ "$BASH_VERSION" ] || return 1
 
