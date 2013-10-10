@@ -23,13 +23,22 @@ function _cdhist_initialize() {
 	OLDIFS=$IFS
 	IFS=$'\n'
 	
-	local -a mylist=( $( tail -r $cdhistlist ) )
+	#local -a mylist=( $( tail -r $cdhistlist ) )
+	local -a mylist=( $( cat $cdhistlist ) )
 	local -a temp=()
 	local -i i=count=0
 	
-	for ((i=0; i<${#mylist[*]}; i++)); do
+	#for ((i=0; i<${#mylist[*]}; i++)); do
+	#	if ! echo "${temp[*]}" | grep -x "${mylist[i]}" >/dev/null; then
+	#		temp[i]="${mylist[i]}"
+	#		CDHIST_CDQ[$count]="${mylist[i]}"
+	#		let count++
+	#		[ $count -eq $CDHIST_CDQMAX ] && break
+	#	fi
+	#done
+	for ((i=${#mylist[*]}-1; i>=0; i--)); do
 		if ! echo "${temp[*]}" | grep -x "${mylist[i]}" >/dev/null; then
-			temp[i]="${mylist[i]}"
+			temp[$count]="${mylist[i]}"
 			CDHIST_CDQ[$count]="${mylist[i]}"
 			let count++
 			[ $count -eq $CDHIST_CDQMAX ] && break
@@ -127,16 +136,43 @@ function +  { _cdhist_forward "$@"; }
 function -  { _cdhist_back "$@"; }
 function =  { _cdhist_history "$@"; }
 
-function _cdhist_complement() {
-	_cdhist_history
-	return 0
-}
-
-complete -F _cdhist_complement =
-
 if [ -f $cdhistlist ]; then
 	_cdhist_initialize
-	cd $HOME >/dev/null
+	unset -f _cdhist_initialize
+	cd $HOME
 else
 	_cdhist_reset
+fi
+
+############################################################
+
+[ -f ~/.cdhist.conf ] && . ~/.cdhist.conf
+_cdhist_list ()
+{
+	shift
+	if [ -z "$1" ]; then
+		sort $cdhistlist | uniq -c | sort -nr | head | sed "s $HOME ~ g"
+	else
+		_cdhist_cd $(sort $cdhistlist | uniq -c | sort -nr | head | nl | awk '{if($1=='$1') print $3}' | sed "s ~ $HOME g")
+	fi
+}
+
+cd ()
+{
+	if [ "$1" = '-l' -o "$1" = '--most-used' ]; then
+		_cdhist_list "$@"
+		return 0
+	fi
+	_cdhist_cd "$@"
+}
+
+if [ "$enable_auto_cdls" ]; then
+	auto_cdls()
+	{
+		if [ "$OLDPWD" != "$PWD" ]; then
+			ls
+			OLDPWD="$PWD"
+		fi
+	}
+	PROMPT_COMMAND="$PROMPT_COMMAND"$'\n'auto_cdls
 fi
