@@ -134,7 +134,27 @@ function _cdhist_back() {
 function cd { _cdhist_cd "$@"; }
 function +  { _cdhist_forward "$@"; }
 function -  { _cdhist_back "$@"; }
-function =  { _cdhist_history "$@"; }
+#function =  { _cdhist_history "$@"; }
+function =  { 
+	if expr "$1" : '[0-9]*' > /dev/null ; then
+		# if 1..9
+		_cdhist_history "$@"
+	else
+		# if a..z
+		if [ $# -eq 0 ]; then
+			_cdhist_history "$@"
+		elif [ $# -eq 1 ]; then
+			if [ $(_cdhist_history | grep -i "$1" | wc -l) -eq 1 ]; then
+				cd $(_cdhist_history | grep -i "$1" | awk /$2/'{print $2}' | sed "s ~ $HOME g")
+			else
+				_cdhist_history | grep -i "$1"
+			fi
+		else
+			cd $(_cdhist_history | grep -i "$1" | awk /$2/'{print $2}' | sed "s ~ $HOME g")
+		fi
+
+	fi
+}
 
 if [ -f $cdhistlist ]; then
 	_cdhist_initialize
