@@ -28,4 +28,6 @@ echo '= [word][num] - list directories like a ring buffer and you can train a ca
 echo ''
 
 test "$1" = '-s' && exit
+
+echo "export enable_auto_cdls=1" >>~/.bashrc
 echo "source $INSTALL_DIR/$INSTALL_FILE" >>~/.bashrc
