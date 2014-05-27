@@ -158,6 +158,7 @@ function =  {
 
 if [ -f $cdhistlist ]; then
 	_cdhist_initialize
+	echo "export enable_auto_cdls=1" >>~/.bashrc
 	unset -f _cdhist_initialize
 	cd $HOME
 else
@@ -166,7 +167,6 @@ fi
 
 ############################################################
 
-[ -f ~/.cdhist.conf ] && . ~/.cdhist.conf
 _cdhist_list ()
 {
 	shift
