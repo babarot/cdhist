@@ -208,14 +208,71 @@ _cdhist_about ()
 	command rm -r $result_even $result_odd
 }
 
+_cdhist_database ()
+{
+	# Initialize
+	local i=
+	local result_file_01=/tmp/result_1.$$
+	sort $cdhistlist | uniq -c | sort -nr | grep -i "$1" >$result_file_01
+	local result_file_02=/tmp/result_2.$$
+	sort $cdhistlist | uniq -c | sort -nr | grep -i "$1" >$result_file_02
+	
+	function _check_the_path()
+	{
+		IFS=$'\n';
+		local i=
+		local available_path=( $(cat - | awk '{print $2}') )
+		for ((i=0; i<"${#available_path[*]}"; i++)); do
+			if [ -d "${available_path[i]}" ]; then
+				echo "${available_path[i]}"
+			fi
+		done | sed "s $HOME ~ g" | head
+		unset i available_path
+	}
+	
+	# Main part
+	shift
+	for i in "$@"
+	do
+		if [ `expr $# % 2` == 0 ]; then
+			awk '/\/?'"$i"'/' $result_file_01 >$result_file_02
+		else
+			awk '/\/?'"$i"'/' $result_file_02 >$result_file_01
+		fi
+		shift
+	done 
+	
+	res1_res=`wc -l $result_file_01 | awk '{print $1}'`
+	res2_res=`wc -l $result_file_02 | awk '{print $1}'`
+	if [ $res1_res -lt $res2_res ]; then
+		#echo "$res1_res hists"
+		cat $result_file_01
+	else
+		#echo "$res2_res hists"
+		cat $result_file_02
+	fi | _check_the_path
+	
+	command rm -r $result_file_01 $result_file_02
+	unset result_file_01 result_file_02 res1_res res2_res i
+}
+
 cd ()
 {
 	if [ "$1" = '-l' -o "$1" = '--most-used' ]; then
 		_cdhist_list "$@"
 		return 0
-	#elif [ "$1" = '-a' -o "$1" = '--about' ]; then
-	#	_cdhist_about "$@"
-	#	return 0
+	elif [ "$1" = '-a' -o "$1" = '--about' ]; then
+		shift && test -z "$1" && return 1
+		if [ $( _cdhist_database "$@" | wc -l ) -eq 1 ]; then
+			cd $( _cdhist_database "$@" | sed "s ~ $HOME g")
+		else
+			if expr "${@:$#:1}" : '[0-9]*' >/dev/null ; then
+				cd $( _cdhist_database "$@" | nl | awk '/'"${@:$#:1}"'/{print $2}' | sed "s ~ $HOME g")
+			else
+				_cdhist_database "$@" | nl
+			fi
+		fi
+		return 0
 	fi
 	_cdhist_cd "$@"
 }
