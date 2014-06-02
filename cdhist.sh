@@ -176,38 +176,6 @@ _cdhist_list ()
 	fi
 }
 
-_cdhist_about ()
-{
-	local i=
-	local result_even=/tmp/result.$$
-	local result_odd=/tmp/result.$$2
-
-	sort $cdhistlist | uniq | grep -i "$1" >$result_even
-	sort $cdhistlist | uniq | grep -i "$1" >$result_odd
-	
-	shift
-	for i in "$@"
-	do
-		if [ `expr $# % 2` == 0 ]; then
-			awk '/\/'"$i"'/' $result_even >$result_odd
-		else
-			awk '/\/'"$i"'/' $result_odd >$result_even
-		fi
-		shift
-	done 
-	
-	a=`wc -l $result_even | awk '{print $1}'`
-	b=`wc -l $result_odd | awk '{print $1}'`
-	
-	if [ $a -lt $b ]; then
-		cat $result_even
-	else
-		cat $result_odd
-	fi | sed "s $HOME ~ g" | tr '\/' ' '
-	
-	command rm -r $result_even $result_odd
-}
-
 _cdhist_database ()
 {
 	# Initialize
