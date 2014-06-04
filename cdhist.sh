@@ -20,22 +20,12 @@ declare -i CDHIST_CDQMAX=10
 declare -a CDHIST_CDQ
 
 function _cdhist_initialize() {
-	OLDIFS=$IFS
-	IFS=$'\n'
+	OLDIFS=$IFS; IFS=$'\n'
 	
-	#local -a mylist=( $( tail -r $cdhistlist ) )
 	local -a mylist=( $( cat $cdhistlist ) )
 	local -a temp=()
 	local -i i=count=0
 	
-	#for ((i=0; i<${#mylist[*]}; i++)); do
-	#	if ! echo "${temp[*]}" | grep -x "${mylist[i]}" >/dev/null; then
-	#		temp[i]="${mylist[i]}"
-	#		CDHIST_CDQ[$count]="${mylist[i]}"
-	#		let count++
-	#		[ $count -eq $CDHIST_CDQMAX ] && break
-	#	fi
-	#done
 	for ((i=${#mylist[*]}-1; i>=0; i--)); do
 		if ! echo "${temp[*]}" | grep -x "${mylist[i]}" >/dev/null; then
 			temp[$count]="${mylist[i]}"
@@ -44,7 +34,6 @@ function _cdhist_initialize() {
 			[ $count -eq $CDHIST_CDQMAX ] && break
 		fi
 	done
-	
 	IFS=$OLDIFS
 }
 
@@ -131,43 +120,7 @@ function _cdhist_back() {
 	fi
 }
 
-function cd { _cdhist_cd "$@"; }
-function +  { _cdhist_forward "$@"; }
-function -  { _cdhist_back "$@"; }
-#function =  { _cdhist_history "$@"; }
-function =  { 
-	if expr "$1" : '[0-9]*' > /dev/null ; then
-		# if 1..9
-		_cdhist_history "$@"
-	else
-		# if a..z
-		if [ $# -eq 0 ]; then
-			_cdhist_history "$@"
-		elif [ $# -eq 1 ]; then
-			if [ $(_cdhist_history | grep -i "$1" | wc -l) -eq 1 ]; then
-				cd $(_cdhist_history | grep -i "$1" | awk /$2/'{print $2}' | sed "s ~ $HOME g")
-			else
-				_cdhist_history | grep -i "$1"
-			fi
-		else
-			cd $(_cdhist_history | grep -i "$1" | awk /$2/'{print $2}' | sed "s ~ $HOME g")
-		fi
-
-	fi
-}
-
-if [ -f $cdhistlist ]; then
-	_cdhist_initialize
-	unset -f _cdhist_initialize
-	cd $HOME
-else
-	_cdhist_reset
-fi
-
-############################################################
-
-_cdhist_list ()
-{
+function _cdhist_list() {
 	shift
 	if [ -z "$1" ]; then
 		sort $cdhistlist | uniq -c | sort -nr | head | sed "s $HOME ~ g"
@@ -176,17 +129,14 @@ _cdhist_list ()
 	fi
 }
 
-_cdhist_database ()
-{
-	# Initialize
+function _cdhist_database() {
 	local i=
 	local result_file_01=/tmp/result_1.$$
 	sort $cdhistlist | uniq -c | sort -nr | grep -i "$1" >$result_file_01
 	local result_file_02=/tmp/result_2.$$
 	sort $cdhistlist | uniq -c | sort -nr | grep -i "$1" >$result_file_02
 	
-	function _check_the_path()
-	{
+	function _check_the_path() {
 		IFS=$'\n';
 		local i=
 		local available_path=( $(cat - | awk '{print $2}') )
@@ -224,8 +174,36 @@ _cdhist_database ()
 	unset result_file_01 result_file_02 res1_res res2_res i
 }
 
-cd ()
-{
+function -() {
+	_cdhist_forward "$@";
+}
+
+function +() {
+	_cdhist_back "$@";
+}
+
+function =() { 
+	if expr "$1" : '[0-9]*' > /dev/null ; then
+		# if 1..9
+		_cdhist_history "$@"
+	else
+		# if a..z
+		if [ $# -eq 0 ]; then
+			_cdhist_history "$@"
+		elif [ $# -eq 1 ]; then
+			if [ $(_cdhist_history | grep -i "$1" | wc -l) -eq 1 ]; then
+				cd $(_cdhist_history | grep -i "$1" | awk /$2/'{print $2}' | sed "s ~ $HOME g")
+			else
+				_cdhist_history | grep -i "$1"
+			fi
+		else
+			cd $(_cdhist_history | grep -i "$1" | awk /$2/'{print $2}' | sed "s ~ $HOME g")
+		fi
+
+	fi
+}
+
+function cd() {
 	if [ "$1" = '-l' -o "$1" = '--most-used' ]; then
 		_cdhist_list "$@"
 		return 0
@@ -245,9 +223,16 @@ cd ()
 	_cdhist_cd "$@"
 }
 
+if [ -f $cdhistlist ]; then
+	_cdhist_initialize
+	unset -f _cdhist_initialize
+	cd $HOME
+else
+	_cdhist_reset
+fi
+
 if [ "$enable_auto_cdls" ]; then
-	auto_cdls()
-	{
+	function auto_cdls() {
 		if [ "$OLDPWD" != "$PWD" ]; then
 			ls
 			OLDPWD="$PWD"
