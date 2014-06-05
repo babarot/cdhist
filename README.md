@@ -100,16 +100,46 @@ This script "cdhist" store the movement history of recent on the ring buffer lik
 **For example:**
 
 	$ =
-	3 ~/dotfiles
- 	2 ~
- 	1 ~/Work
- 	0 ~/github
+	 3 ~/dotfiles
+ 	 2 ~
+ 	 1 ~/Work
+ 	 0 ~/github
  	$ +; pwd
  	/Users/b4b4r07/dotfiles
  	$ - 2; pwd
  	/Users/b4b4r07/Work
  
  When you pass a number to the argument of this command, jump to the directory of numbers subscript.
+ 
+ In addition, = (equal command) can narrow the candidate from the list and jump to the directory.
+ 
+ **Demo**
+ 
+ 	$ = dr gi
+ 	 1 ~/Dropbox/usr/github
+ 	 0 ~/Dropbox/usr/github/cdhist
+ 	
+ If there is only one candidate, go directly to the candidate.
+ 
+ **Demo**
+ 
+ 	$ = dr cd
+ 	$ pwd
+ 	/Users/b4b4r07/Dropbox/usr/github/cdhist
+ 
+ If you pass a number to the last command line argument, jumping to number of the candidate.
+ 
+ **Demo**
+ 
+ 	$ = de
+ 	 9 ~/Desktop/eigo
+	 8 ~/Desktop
+	 7 ~/Desktop/sugaku
+	 6 ~/Desktop/rika
+	$ = dr 9
+	$ pwd
+	/Users/b4b4r07/Desktop/eigo
+ 	
  
 # Author
 
