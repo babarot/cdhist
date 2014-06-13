@@ -1,21 +1,13 @@
-#   @(#) Directory history manager on bash.
-#
-#   Name:     cdhist.sh
-#   Author:   b4b4r07 <b4b4r07@gmail.com>
-#   URL:      https://github.com/b4b4r07/cdhist
-#             (see this url for latest release & screenshots)
-#   License:  OSI approved MIT license
-#   Created:  Tue Sep 3 01:33:53 2013 +0900
-#   Modified: 
-#
-#   Copyright (c) 2013, b4b4r07
-#   All rights reserved.
-#
-###################################################################################################################
+#!/bin/sh
 
-[ "$BASH_VERSION" ] || return 1
+# Only shell script for bash
+if [ ! "$BASH_VERSION" ]; then
+	echo "Require bash"
+	exit
+fi
 
-declare -r cdhistlist=~/.cdhistlog
+# Declare and initialize a variable
+declare    cdhistlist="$HOME/.cdhistlog"
 declare -i CDHIST_CDQMAX=10
 declare -a CDHIST_CDQ
 
@@ -129,51 +121,6 @@ function _cdhist_list() {
 	fi
 }
 
-function _cdhist_database() {
-	local i=
-	local result_file_01=/tmp/result_1.$$
-	sort $cdhistlist | uniq -c | sort -nr | grep -i "$1" >$result_file_01
-	local result_file_02=/tmp/result_2.$$
-	sort $cdhistlist | uniq -c | sort -nr | grep -i "$1" >$result_file_02
-	
-	function _check_the_path() {
-		IFS=$'\n';
-		local i=
-		local available_path=( $(cat - | awk '{print $2}') )
-		for ((i=0; i<"${#available_path[*]}"; i++)); do
-			if [ -d "${available_path[i]}" ]; then
-				echo "${available_path[i]}"
-			fi
-		done | sed "s $HOME ~ g" | head
-		unset i available_path
-	}
-	
-	# Main part
-	shift
-	for i in "$@"
-	do
-		if [ `expr $# % 2` == 0 ]; then
-			awk '/\/?'"$i"'/' $result_file_01 >$result_file_02
-		else
-			awk '/\/?'"$i"'/' $result_file_02 >$result_file_01
-		fi
-		shift
-	done 
-	
-	res1_res=`wc -l $result_file_01 | awk '{print $1}'`
-	res2_res=`wc -l $result_file_02 | awk '{print $1}'`
-	if [ $res1_res -lt $res2_res ]; then
-		#echo "$res1_res hists"
-		cat $result_file_01
-	else
-		#echo "$res2_res hists"
-		cat $result_file_02
-	fi | _check_the_path
-	
-	command rm -r $result_file_01 $result_file_02
-	unset result_file_01 result_file_02 res1_res res2_res i
-}
-
 function -() {
 	_cdhist_forward "$@";
 }
@@ -232,11 +179,11 @@ else
 fi
 
 if [ "$enable_auto_cdls" ]; then
-	function auto_cdls() {
+	function _cdhist_auto_cdls() {
 		if [ "$OLDPWD" != "$PWD" ]; then
 			ls
 			OLDPWD="$PWD"
 		fi
 	}
-	PROMPT_COMMAND="$PROMPT_COMMAND"$'\n'auto_cdls
+	PROMPT_COMMAND="$PROMPT_COMMAND"$'\n'_cdhist_auto_cdls
 fi
