@@ -9,7 +9,7 @@ fi
 # Declare and initialize a variable
 declare    cdhistlist="$HOME/.cdhistlog"
 declare -i CDHIST_CDQMAX=10
-declare -a CDHIST_CDQ
+declare -a CDHIST_CDQ=()
 
 function _cdhist_initialize() {
 	OLDIFS=$IFS; IFS=$'\n'
@@ -113,11 +113,25 @@ function _cdhist_back() {
 }
 
 function _cdhist_list() {
-	shift
 	if [ -z "$1" ]; then
 		sort $cdhistlist | uniq -c | sort -nr | head | sed "s $HOME ~ g"
 	else
 		_cdhist_cd $(sort $cdhistlist | uniq -c | sort -nr | head | nl | awk '{if($1=='$1') print $3}' | sed "s ~ $HOME g")
+	fi
+}
+
+function _cdhist_find() {
+	db=$(sort $cdhistlist | uniq | \grep -i "/\.\?$1")
+	shift
+
+	for i do
+		db=$(echo "${db}" | \grep -i "/\.\?${i}")
+	done
+
+	if [ $(echo "${db}" | wc -l) -eq 1 ]; then
+		_cdhist_cd "${db}"
+	else
+		echo "${db}" | sed "s $HOME ~ g"
 	fi
 }
 
@@ -130,41 +144,34 @@ function +() {
 }
 
 function =() { 
-	if expr "$1" : '[0-9]*' > /dev/null ; then
-		# if 1..9
+	if ( test -z "$1" || expr "$1" : '[0-9]*' || expr "`eval echo '$'{$#}`" : '[0-9]*' ) >/dev/null; then
 		_cdhist_history "$@"
-	else
-		# if a..z
-		if [ $# -eq 0 ]; then
-			_cdhist_history "$@"
-		elif [ $# -eq 1 ]; then
-			if [ $(_cdhist_history | grep -i "$1" | wc -l) -eq 1 ]; then
-				cd $(_cdhist_history | grep -i "$1" | awk /$2/'{print $2}' | sed "s ~ $HOME g")
-			else
-				_cdhist_history | grep -i "$1"
-			fi
-		else
-			cd $(_cdhist_history | grep -i "$1" | awk /$2/'{print $2}' | sed "s ~ $HOME g")
-		fi
+		return
+	fi
 
+	# siborikomi >>>>
+	db=$(_cdhist_history | \grep -i "/\.\?$1")
+	shift
+	for i do
+		db=$(echo "${db}" | \grep -i "/\.\?${i}")
+	done
+	# siborikomi <<<<
+
+	if [ $(echo "${db}" | wc -l) -eq 1 ]; then
+		_cdhist_cd $(echo "${db}" | awk '{print $2}' | sed "s ~ $HOME g")
+	else
+		echo "${db}" | sed "s ~ $HOME g"
 	fi
 }
 
 function cd() {
 	if [ "$1" = '-l' -o "$1" = '--most-used' ]; then
+		shift
 		_cdhist_list "$@"
 		return 0
-	elif [ "$1" = '-a' -o "$1" = '--about' ]; then
-		shift && test -z "$1" && return 1
-		if [ $( _cdhist_database "$@" | wc -l ) -eq 1 ]; then
-			cd $( _cdhist_database "$@" | sed "s ~ $HOME g")
-		else
-			if expr "${@:$#:1}" : '[0-9]*' >/dev/null ; then
-				cd $( _cdhist_database "$@" | nl | awk '/'"${@:$#:1}"'/{print $2}' | sed "s ~ $HOME g")
-			else
-				_cdhist_database "$@" | nl
-			fi
-		fi
+	elif [ "$1" = '-f' -o "$1" = '--find' ]; then
+		shift
+		_cdhist_find "$@"
 		return 0
 	fi
 	_cdhist_cd "$@"
