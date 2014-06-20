@@ -173,20 +173,19 @@ function =() {
 
 function cd() {
 	if [ "$1" = '-h' -o "$1" = '--help' ]; then
-		echo "help"
-		return 0
-	elif [ "$1" = '-m' -o "$1" = '--most-used' ]; then
-		shift
-		_cdhist_history "$@"
-		return 0
+		echo -e "cd [OPTION] path\n"
+		echo -e "\t-h\t\tdisplay this help"
+		echo -e "\t-s word\t\tnarrow down from the past movement history"
+		echo -e "\t\t\trepeat all the given arguments until it is gone"
+		echo -e "\t-l [num]\tlist up a high number of uses"
+		echo -e "\t\t\tmove to the path of argument\n"
+		return 1
 	elif [ "$1" = '-l' -o "$1" = '--top-used' ]; then
 		shift
-		_cdhist_list "$@"
-		return 0
+		_cdhist_list "$@" && return 0 || return 1
 	elif [ "$1" = '-s' -o "$1" = '--search' ]; then
 		shift
-		_cdhist_find "$@"
-		return 0
+		_cdhist_find "$@" && return 0 || return 1
 	fi
 	_cdhist_cd "$@"
 }
