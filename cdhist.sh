@@ -128,7 +128,7 @@ function _cdhist_find() {
 	for i do
 		if [ "${!#}" = $i ]; then
 			if ( expr "${!#}" : '[0-9]*' ) >/dev/null; then
-				_cdhist_cd $(echo "${db}" | nl | awk '{if($1=='`eval echo '$'{$#}`') print $2}' | sed "s ~ $HOME g")
+				_cdhist_cd $(echo "${db}" | nl | awk '{if($1=='${!#}') print $2}' | sed "s ~ $HOME g")
 				return
 			fi
 		fi
