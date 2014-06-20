@@ -174,11 +174,18 @@ function =() {
 }
 
 function cd() {
-	if [ "$1" = '-l' -o "$1" = '--most-used' ]; then
+	if [ "$1" = '-h' -o "$1" = '--help' ]; then
+		echo "help"
+		return 0
+	elif [ "$1" = '-m' -o "$1" = '--most-used' ]; then
+		shift
+		_cdhist_history "$@"
+		return 0
+	elif [ "$1" = '-l' -o "$1" = '--top-used' ]; then
 		shift
 		_cdhist_list "$@"
 		return 0
-	elif [ "$1" = '-f' -o "$1" = '--find' ]; then
+	elif [ "$1" = '-s' -o "$1" = '--search' ]; then
 		shift
 		_cdhist_find "$@"
 		return 0
