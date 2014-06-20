@@ -158,13 +158,11 @@ function =() {
 		return
 	fi
 
-	# siborikomi >>>>
 	db=$(_cdhist_history | \grep -i "/\.\?$1")
 	shift
 	for i do
 		db=$(echo "${db}" | \grep -i "/\.\?${i}")
 	done
-	# siborikomi <<<<
 
 	if [ $(echo "${db}" | wc -l) -eq 1 ]; then
 		_cdhist_cd $(echo "${db}" | awk '{print $2}' | sed "s ~ $HOME g")
