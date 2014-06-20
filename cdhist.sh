@@ -114,7 +114,7 @@ function _cdhist_back() {
 
 function _cdhist_list() {
 	if [ -z "$1" ]; then
-		sort $cdhistlist | uniq -c | sort -nr | head | sed "s $HOME ~ g"
+		sort $cdhistlist | uniq -c | sort -nr | head | sed "s $HOME ~ g" | awk '{printf "%-50s (%4d)\n", $2, $1}' | nl
 	else
 		_cdhist_cd $(sort $cdhistlist | uniq -c | sort -nr | head | nl | awk '{if($1=='$1') print $3}' | sed "s ~ $HOME g")
 	fi
