@@ -202,11 +202,11 @@ else
 fi
 
 if [ "$enable_auto_cdls" ]; then
-	function _cdhist_auto_cdls() {
+	function auto_cdls() {
 		if [ "$OLDPWD" != "$PWD" ]; then
 			ls
 			OLDPWD="$PWD"
 		fi
 	}
-	PROMPT_COMMAND="$PROMPT_COMMAND"$'\n'_cdhist_auto_cdls
+	PROMPT_COMMAND="$PROMPT_COMMAND"$'\n'auto_cdls
 fi
