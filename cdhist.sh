@@ -7,14 +7,14 @@ if [ ! "$BASH_VERSION" ]; then
 fi
 
 # Declare and initialize a variable
-declare    cdhistlist="$HOME/.cdhistlog"
+declare    CDHIST_CDLOG="$HOME/.cdhistlog"
 declare -i CDHIST_CDQMAX=10
 declare -a CDHIST_CDQ=()
 
 function _cdhist_initialize() {
 	OLDIFS=$IFS; IFS=$'\n'
 	
-	local -a mylist=( $( cat $cdhistlist ) )
+	local -a mylist=( $( cat $CDHIST_CDLOG ) )
 	local -a temp=()
 	local -i i=count=0
 	
@@ -62,7 +62,7 @@ function _cdhist_rot() {
 
 function _cdhist_cd() {
 	local i f=0
-	builtin cd "$@" && pwd >>$cdhistlist || return 1
+	builtin cd "$@" && pwd >>$CDHIST_CDLOG || return 1
 	for ((i=0; i<${#CDHIST_CDQ[@]}; i++)); do
 		if [ "${CDHIST_CDQ[$i]}" = "$PWD" ]; then f=1; break; fi
 	done
@@ -86,7 +86,7 @@ function _cdhist_history() {
 		done
 	elif [ "$1" -lt ${#CDHIST_CDQ[@]} ]; then
 		d=${CDHIST_CDQ[$1]}
-		if builtin cd "$d" && pwd >>$cdhistlist; then
+		if builtin cd "$d" && pwd >>$CDHIST_CDLOG; then
 			_cdhist_rot $(($1+1)) -1
 		else
 			_cdhist_del $1
@@ -99,7 +99,7 @@ function _cdhist_forward() {
 	if ! builtin cd "${CDHIST_CDQ[0]}"; then
 		_cdhist_del 0
 	else
-		pwd >>$cdhistlist
+		pwd >>$CDHIST_CDLOG
 	fi
 }
 
@@ -108,21 +108,21 @@ function _cdhist_back() {
 	if ! builtin cd "${CDHIST_CDQ[0]}"; then
 		_cdhist_del 0
 	else
-		pwd >>$cdhistlist
+		pwd >>$CDHIST_CDLOG
 	fi
 }
 
 function _cdhist_list() {
 	if [ -z "$1" ]; then
-		sort $cdhistlist | uniq -c | sort -nr | head | sed "s $HOME ~ g" | awk '{printf "%-50s (%4d)\n", $2, $1}' | nl
+		sort $CDHIST_CDLOG | uniq -c | sort -nr | head | sed "s $HOME ~ g" | awk '{printf "%-50s (%4d)\n", $2, $1}' | nl
 	else
-		_cdhist_cd $(sort $cdhistlist | uniq -c | sort -nr | head | nl | awk '{if($1=='$1') print $3}' | sed "s ~ $HOME g")
-	fi
+		_cdhist_cd $(sort $CDHIST_CDLOG | uniq -c | sort -nr | head | nl | awk '{if($1=='$1') print $3}' | sed "s ~ $HOME g")
+	fi #&& return 0
 }
 
 function _cdhist_find() {
 	[ -z "$1" ] && return 1
-	db=$(sort $cdhistlist | uniq | \grep -i "/\.\?$1")
+	db=$(sort $CDHIST_CDLOG | uniq | \grep -i "/\.\?$1")
 	shift
 
 	for i do
@@ -193,7 +193,7 @@ function cd() {
 	_cdhist_cd "$@"
 }
 
-if [ -f $cdhistlist ]; then
+if [ -f $CDHIST_CDLOG ]; then
 	_cdhist_initialize
 	unset -f _cdhist_initialize
 	cd $HOME
