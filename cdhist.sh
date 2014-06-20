@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Only shell script for bash
 if [ ! "$BASH_VERSION" ]; then
