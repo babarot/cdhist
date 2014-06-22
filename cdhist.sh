@@ -219,12 +219,7 @@ function =() {
 
 function cd() {
 	if [ "$1" = '-h' -o "$1" = '--help' ]; then
-		echo -e "cd [OPTION] path\n"
-		echo -e "\t-h\t\tdisplay this help"
-		echo -e "\t-s word\t\tnarrow down from the past movement history"
-		echo -e "\t\t\trepeat all the given arguments until it is gone"
-		echo -e "\t-l [num]\tlist up a high number of uses"
-		echo -e "\t\t\tmove to the path of argument\n"
+		_cdhist_usage
 		return 1
 	elif [ "$1" = '-l' -o "$1" = '--top-used' ]; then
 		shift
@@ -242,14 +237,4 @@ if [ -f $CDHIST_CDLOG ]; then
 	cd $HOME
 else
 	_cdhist_reset
-fi
-
-if [ "$enable_auto_cdls" ]; then
-	function auto_cdls() {
-		if [ "$OLDPWD" != "$PWD" ]; then
-			ls
-			OLDPWD="$PWD"
-		fi
-	}
-	PROMPT_COMMAND="$PROMPT_COMMAND"$'\n'auto_cdls
 fi
