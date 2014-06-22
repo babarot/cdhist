@@ -186,6 +186,9 @@ function _cdhist_find() {
 		echo "${db}" | sed "s $HOME ~ g"
 	fi
 }
+#
+# }}}
+#
 
 function +() {
 	_cdhist_forward "$@";
