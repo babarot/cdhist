@@ -156,11 +156,15 @@ function _cdhist_list() {
 		sort $CDHIST_CDLOG | uniq -c | sort -nr | head | sed "s $HOME ~ g" | awk '{printf "%-50s (%4d)\n", $2, $1}' | nl
 	else
 		_cdhist_cd $(sort $CDHIST_CDLOG | uniq -c | sort -nr | head | nl | awk '{if($1=='$1') print $3}' | sed "s ~ $HOME g")
-	fi #&& return 0
+	fi
 }
 
 function _cdhist_find() {
-	[ -z "$1" ] && return 1
+	[ -z "$1" ] && {
+		echo "-s: too few arguments" 1>&2
+		return 1
+	}
+
 	db=$(sort $CDHIST_CDLOG | uniq | \grep -i "/\.\?$1")
 	shift
 
