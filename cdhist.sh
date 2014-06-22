@@ -11,6 +11,45 @@ declare    CDHIST_CDLOG="$HOME/.cdhistlog"
 declare -i CDHIST_CDQMAX=10
 declare -a CDHIST_CDQ=()
 
+# Enable ls after cd automatically
+if [ "$enable_auto_cdls" ]; then
+	function auto_cdls() {
+		if [ "$OLDPWD" != "$PWD" ]; then
+			ls
+			OLDPWD="$PWD"
+		fi
+	}
+	PROMPT_COMMAND="$PROMPT_COMMAND"$'\n'auto_cdls
+fi
+
+############################################################################################
+# {{{                                                                                       
+# Declare functions that manipulate the data structure in this cdhist.                      
+# *_cdhist_usage: how to use                                                                
+# *_cdhist_initialize: when loading cdhist, assign a recent cd-history to the CDHIST_CDQ    
+# *_cdhist_reset: if CDHIST_CDQMAX do not exist, initialize the CDHIST_CDQ                  
+# *_cdhist_disp: view HOME as ~                                                             
+# *_cdhist_add: add rear of CDHIST_CDQ                                                      
+# *_cdhist_del: delete rear of CDHIST_CDQ                                                   
+# *_cdhist_rot: rotate the CDHIST_CDQ                                                       
+# *_cdhist_cd: cd function in cdhist script                                                 
+# *_cdhist_history: listup the CDHIST_CDQ                                                   
+# *_cdhist_forward: cd +: advance PWD                                                       
+# *_cdhist_back: cd -: return PWD(OLDPWD)                                                   
+# *_cdhist_list: enumerate path high number of uses                                         
+# *_cdhist_find: search path from CDHIST_CDLOG                                              
+#                                                                                           
+############################################################################################
+
+function _cdhist_usage() {
+	echo -e "cd [OPTION] path\n"
+	echo -e "\t-h\t\tdisplay this help"
+	echo -e "\t-s word\t\tnarrow down from the past movement history"
+	echo -e "\t\t\trepeat all the given arguments until it is gone"
+	echo -e "\t-l [num]\tlist up a high number of uses"
+	echo -e "\t\t\tmove to the path of argument\n"
+}
+
 function _cdhist_initialize() {
 	OLDIFS=$IFS; IFS=$'\n'
 	
