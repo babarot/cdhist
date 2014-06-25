@@ -185,7 +185,7 @@ function _cdhist_list() {
 
 function _cdhist_narrow() {
 	[ -z "$1" ] && {
-		echo "-s: too few arguments" 1>&2
+		echo "too few arguments" 1>&2
 		return 1
 	}
 
