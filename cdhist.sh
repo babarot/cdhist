@@ -26,6 +26,10 @@ declare    CDHIST_CDLOG="$HOME/.cdhistlog"
 declare -i CDHIST_CDQMAX=10
 declare -a CDHIST_CDQ=()
 
+# Loading configure file about cdhist, if exist
+if [ -f ~/.cdhist.conf ]; then
+	source ~/.cdhist.conf
+fi
 fi
 
 # Enable after cd automatically
