@@ -30,6 +30,10 @@ declare -a CDHIST_CDQ=()
 if [ -f ~/.cdhist.conf ]; then
 	source ~/.cdhist.conf
 fi
+
+# Enable/disable this script
+if [ "$disable_cdhist" ]; then
+	return
 fi
 
 # Enable after cd automatically
