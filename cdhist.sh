@@ -1,7 +1,3 @@
-#!/bin/bash
-
-# Only shell script for bash
-if [ ! "$BASH_VERSION" ]; then
 #                                                                     
 #                     .o8  oooo         o8o               .           
 #                    "888  `888         `"'             .o8           
@@ -20,8 +16,9 @@ if [ ! "$BASH_VERSION" ]; then
 # It's more convenient than using directory stacks                    
 # when you walk around two or three directories.                      
 # 
+if [ -z "$BASH_VERSION" ]; then
 	echo "Require bash"
-	exit
+	exit 1
 fi
 
 # Declare and initialize a variable
