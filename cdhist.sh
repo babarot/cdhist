@@ -257,17 +257,10 @@ function =() {
 	fi
 }
 
-function cd() {
-	if [ "$1" = '-h' -o "$1" = '--help' ]; then
-		_cdhist_usage
 		return 1
-	elif [ "$1" = '-l' -o "$1" = '--top-used' ]; then
 		shift
-		_cdhist_list "$@" && return 0 || return 1
-	elif [ "$1" = '-s' -o "$1" = '--search' ]; then
-		shift
-		_cdhist_narrow "$@" && return 0 || return 1
 	fi
+function cd() {
 	_cdhist_cd "$@"
 }
 
