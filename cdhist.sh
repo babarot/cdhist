@@ -2,6 +2,24 @@
 
 # Only shell script for bash
 if [ ! "$BASH_VERSION" ]; then
+#                                                                     
+#                     .o8  oooo         o8o               .           
+#                    "888  `888         `"'             .o8           
+#      .ooooo.   .oooo888   888 .oo.   oooo   .oooo.o .o888oo         
+#     d88' `"Y8 d88' `888   888P"Y88b  `888  d88(  "8   888           
+#     888       888   888   888   888   888  `"Y88b.    888           
+#     888   .o8 888   888   888   888   888  o.  )88b   888 .         
+#     `Y8bod8P' `Y8bod88P" o888o o888o o888o 8""888P'   "888"         
+#                                                                     
+######################################################################
+# 
+# Cdhist adds 'web-browser like history' to your BASH shell.          
+# Every time you change the current directory it records the          
+# directory you can go back by simply typing a short command          
+# such as '-' or '+', just like clicking web-browsers's 'back' button.
+# It's more convenient than using directory stacks                    
+# when you walk around two or three directories.                      
+# 
 	echo "Require bash"
 	exit
 fi
