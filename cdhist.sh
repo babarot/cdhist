@@ -38,7 +38,7 @@ fi
 # *_cdhist_forward:    cd +: advance PWD                                                   #
 # *_cdhist_back:       cd -: return PWD(OLDPWD)                                            #
 # *_cdhist_list:       enumerate path high number of uses                                  #
-# *_cdhist_find:       search path from CDHIST_CDLOG                                       #
+# *_cdhist_narrow:     search path from CDHIST_CDLOG                                       #
 #                                                                                          #
 ############################################################################################
 
@@ -158,7 +158,7 @@ function _cdhist_list() {
 	fi
 }
 
-function _cdhist_find() {
+function _cdhist_narrow() {
 	[ -z "$1" ] && {
 		echo "-s: too few arguments" 1>&2
 		return 1
@@ -225,7 +225,7 @@ function cd() {
 		_cdhist_list "$@" && return 0 || return 1
 	elif [ "$1" = '-s' -o "$1" = '--search' ]; then
 		shift
-		_cdhist_find "$@" && return 0 || return 1
+		_cdhist_narrow "$@" && return 0 || return 1
 	fi
 	_cdhist_cd "$@"
 }
