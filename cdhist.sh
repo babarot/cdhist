@@ -231,8 +231,16 @@ function -() {
 }
 
 function =() { 
-	if ( test -z "$1" || expr "$1" : '[0-9]*' || expr "`eval echo '$'{$#}`" : '[0-9]*' ) >/dev/null; then
+	if [ -z "$1" ]; then
 		_cdhist_history "$@"
+		return 0
+	fi
+	if expr "$1" : '[0-9]*' >/dev/null; then
+		_cdhist_history "$1"
+		return
+	fi
+	if expr "${!#}" : '[0-9]*' >/dev/null; then
+		_cdhist_history "${!#}"
 		return
 	fi
 
