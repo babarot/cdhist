@@ -48,6 +48,8 @@ function do_eachtime_cd() {
 PROMPT_COMMAND="$PROMPT_COMMAND"$'\n'do_eachtime_cd
 
 ############################################################################################
+#                                                                                          #
+# These are the function group that users operate INDIRECTLY.                              #
 # Declare functions that manipulate the data structure in this cdhist.                     #
 # *_cdhist_usage:      how to use cdhist                                                   #
 # *_cdhist_initialize: when loading cdhist, assign a recent cd-history to the CDHIST_CDQ   #
