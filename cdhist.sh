@@ -16,6 +16,7 @@ if [ "$enable_auto_cdls" ]; then
 	function auto_cdls() {
 		if [ "$OLDPWD" != "$PWD" ]; then
 			ls
+			pwd >>$CDHIST_CDLOG
 			OLDPWD="$PWD"
 		fi
 	}
@@ -101,7 +102,7 @@ function _cdhist_rot() {
 
 function _cdhist_cd() {
 	local i f=0
-	builtin cd "$@" && pwd >>$CDHIST_CDLOG || return 1
+	builtin cd "$@" || return 1
 	for ((i=0; i<${#CDHIST_CDQ[@]}; i++)); do
 		if [ "${CDHIST_CDQ[$i]}" = "$PWD" ]; then f=1; break; fi
 	done
@@ -125,7 +126,7 @@ function _cdhist_history() {
 		done
 	elif [ "$1" -lt ${#CDHIST_CDQ[@]} ]; then
 		d=${CDHIST_CDQ[$1]}
-		if builtin cd "$d" && pwd >>$CDHIST_CDLOG; then
+		if builtin cd "$d"; then
 			_cdhist_rot $(($1+1)) -1
 		else
 			_cdhist_del $1
@@ -137,8 +138,6 @@ function _cdhist_forward() {
 	_cdhist_rot ${#CDHIST_CDQ[@]} -${1:-1}
 	if ! builtin cd "${CDHIST_CDQ[0]}"; then
 		_cdhist_del 0
-	else
-		pwd >>$CDHIST_CDLOG
 	fi
 }
 
@@ -146,8 +145,6 @@ function _cdhist_back() {
 	_cdhist_rot ${#CDHIST_CDQ[@]} ${1:-1}
 	if ! builtin cd "${CDHIST_CDQ[0]}"; then
 		_cdhist_del 0
-	else
-		pwd >>$CDHIST_CDLOG
 	fi
 }
 
