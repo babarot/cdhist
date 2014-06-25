@@ -26,20 +26,20 @@ declare    CDHIST_CDLOG="$HOME/.cdhistlog"
 declare -i CDHIST_CDQMAX=10
 declare -a CDHIST_CDQ=()
 
-# Enable ls after cd automatically
-if [ "$enable_auto_cdls" ]; then
-	function auto_cdls() {
-		if [ "$OLDPWD" != "$PWD" ]; then
-			ls
-			pwd >>$CDHIST_CDLOG
-			OLDPWD="$PWD"
-		fi
-	}
-	PROMPT_COMMAND="$PROMPT_COMMAND"$'\n'auto_cdls
 fi
 
+# Enable after cd automatically
+function do_eachtime_cd() {
+	if [ "$OLDPWD" != "$PWD" ]; then
+		# enable ls after cd, if $enable_auto_cdls exist
+		[ "$disable_auto_cdls" ] || ls
+		pwd >>$CDHIST_CDLOG
+		OLDPWD="$PWD"
+	fi
+}
+PROMPT_COMMAND="$PROMPT_COMMAND"$'\n'do_eachtime_cd
+
 ############################################################################################
-# {{{                                                                                      #
 # Declare functions that manipulate the data structure in this cdhist.                     #
 # *_cdhist_usage:      how to use cdhist                                                   #
 # *_cdhist_initialize: when loading cdhist, assign a recent cd-history to the CDHIST_CDQ   #
