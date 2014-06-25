@@ -211,6 +211,17 @@ function _cdhist_narrow() {
 	fi
 }
 
+############################################################################################
+#                                                                                          #
+# These are the function group that users operate DIRECTLY.                                #
+# Using function accutually                                                                #
+# * +:  go to the next directory (do _cdhist_forward)                                      #
+# * -:  go back to the old directory (do _cdhist_back)                                     #
+# * =:  displays the ring buffer of the movement history (do _cdhist_history)              #
+# * cd: change directory                                                                   #
+#                                                                                          #
+############################################################################################
+
 function +() {
 	_cdhist_forward "$@";
 }
