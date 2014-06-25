@@ -257,9 +257,24 @@ function =() {
 	fi
 }
 
+function qfind() {
+	if [ -z "$1" ]; then
 		return 1
+	fi
+	IFS=$'\n'
+	array=( $(sort $CDHIST_CDLOG | uniq) )
+	
+	if [ "$1" == '-n' ]; then
+		array=( $(tail -n 100 $CDHIST_CDLOG | sort | uniq) )
 		shift
 	fi
+	
+	for i in "${array[@]}"
+	do
+		find "$i" -maxdepth 1 -type f -name "*$1*" 2>/dev/null
+	done | sed "s $HOME ~ g" | \grep --color "$1"
+}
+
 function cd() {
 	_cdhist_cd "$@"
 }
