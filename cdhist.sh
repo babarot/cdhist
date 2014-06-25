@@ -275,6 +275,10 @@ function qfind() {
 	done | sed "s $HOME ~ g" | \grep --color "$1"
 }
 
+function nw() {
+	_cdhist_narrow "$@"
+}
+
 function cd() {
 	_cdhist_cd "$@"
 }
