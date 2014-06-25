@@ -23,22 +23,22 @@ if [ "$enable_auto_cdls" ]; then
 fi
 
 ############################################################################################
-# {{{                                                                                       
-# Declare functions that manipulate the data structure in this cdhist.                      
-# *_cdhist_usage:      how to use cdhist                                                    
-# *_cdhist_initialize: when loading cdhist, assign a recent cd-history to the CDHIST_CDQ    
-# *_cdhist_reset:      if CDHIST_CDQMAX do not exist, initialize the CDHIST_CDQ             
-# *_cdhist_disp:       view HOME as ~                                                       
-# *_cdhist_add:        add rear of CDHIST_CDQ                                               
-# *_cdhist_del:        delete rear of CDHIST_CDQ                                            
-# *_cdhist_rot:        rotate the CDHIST_CDQ                                                
-# *_cdhist_cd:         cd function in cdhist script                                         
-# *_cdhist_history:    listup the CDHIST_CDQ                                                
-# *_cdhist_forward:    cd +: advance PWD                                                    
-# *_cdhist_back:       cd -: return PWD(OLDPWD)                                             
-# *_cdhist_list:       enumerate path high number of uses                                   
-# *_cdhist_find:       search path from CDHIST_CDLOG                                        
-#                                                                                           
+# {{{                                                                                      #
+# Declare functions that manipulate the data structure in this cdhist.                     #
+# *_cdhist_usage:      how to use cdhist                                                   #
+# *_cdhist_initialize: when loading cdhist, assign a recent cd-history to the CDHIST_CDQ   #
+# *_cdhist_reset:      if CDHIST_CDQMAX do not exist, initialize the CDHIST_CDQ            #
+# *_cdhist_disp:       view HOME as ~                                                      #
+# *_cdhist_add:        add rear of CDHIST_CDQ                                              #
+# *_cdhist_del:        delete rear of CDHIST_CDQ                                           #
+# *_cdhist_rot:        rotate the CDHIST_CDQ                                               #
+# *_cdhist_cd:         cd function in cdhist script                                        #
+# *_cdhist_history:    listup the CDHIST_CDQ                                               #
+# *_cdhist_forward:    cd +: advance PWD                                                   #
+# *_cdhist_back:       cd -: return PWD(OLDPWD)                                            #
+# *_cdhist_list:       enumerate path high number of uses                                  #
+# *_cdhist_find:       search path from CDHIST_CDLOG                                       #
+#                                                                                          #
 ############################################################################################
 
 function _cdhist_usage() {
