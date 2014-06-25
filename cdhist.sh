@@ -284,7 +284,9 @@ function cd() {
 }
 
 #
-# CDHIST START
+# This is a real practice department in this script
+# If $CDHIST_CDLOG exist, substitute $CDHIST_CDLOG records for $CDHIST_CDQ
+# Otherwise, execute _cdhist_reset that substitute $PWD for $CDHIST_CDQ
 #
 if [ -f $CDHIST_CDLOG ]; then
 	_cdhist_initialize
