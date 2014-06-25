@@ -210,9 +210,6 @@ function _cdhist_narrow() {
 		echo "${db}" | sed "s $HOME ~ g"
 	fi
 }
-#
-# }}}
-#
 
 function +() {
 	_cdhist_forward "$@";
