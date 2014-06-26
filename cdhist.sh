@@ -82,7 +82,10 @@ function _cdhist_initialize() {
 	local -a mylist=( $( cat $CDHIST_CDLOG ) )
 	local -a temp=()
 	local -i i=count=0
-	
+
+	# I want to do 'sort $CDHIST_CDLOG | uniq | tail 10'
+	# However, if I do that, the order of the lasted log file is messed up.
+	# The following for-loop execute "uniq" disposal without "sort".
 	for ((i=${#mylist[*]}-1; i>=0; i--)); do
 		if ! echo "${temp[*]}" | grep -x "${mylist[i]}" >/dev/null; then
 			temp[$count]="${mylist[i]}"
@@ -230,10 +233,6 @@ function -() {
 	_cdhist_back "$@";
 }
 
-function cd() {
-	_cdhist_cd "$@"
-}
-
 function =() { 
 	if [ -z "$1" ]; then
 		_cdhist_history "$@"
@@ -259,6 +258,10 @@ function =() {
 	else
 		echo "${db}" | sed "s $HOME ~ g"
 	fi
+}
+
+function cd() {
+	_cdhist_cd "$@"
 }
 
 function qfind() {
