@@ -189,7 +189,7 @@ function _cdhist_narrow() {
 		return 1
 	}
 
-	db=$(sort $CDHIST_CDLOG | uniq | \grep -i "/\.\?$1")
+	local db=$(sort $CDHIST_CDLOG | uniq | \grep -i "/\.\?$1")
 	shift
 
 	for i do
@@ -230,6 +230,10 @@ function -() {
 	_cdhist_back "$@";
 }
 
+function cd() {
+	_cdhist_cd "$@"
+}
+
 function =() { 
 	if [ -z "$1" ]; then
 		_cdhist_history "$@"
@@ -244,7 +248,7 @@ function =() {
 		return
 	fi
 
-	db=$(_cdhist_history | \grep -i "/\.\?$1")
+	local db=$(_cdhist_history | \grep -i "/\.\?$1")
 	shift
 	for i do
 		db=$(echo "${db}" | \grep -i "/\.\?${i}")
@@ -261,8 +265,8 @@ function qfind() {
 	if [ -z "$1" ]; then
 		return 1
 	fi
-	IFS=$'\n'
-	array=( $(sort $CDHIST_CDLOG | uniq) )
+	local IFS=$'\n'
+	local array=( $(sort $CDHIST_CDLOG | uniq) )
 	
 	if [ "$1" == '-n' ]; then
 		array=( $(tail -n 100 $CDHIST_CDLOG | sort | uniq) )
@@ -277,10 +281,6 @@ function qfind() {
 
 function nw() {
 	_cdhist_narrow "$@"
-}
-
-function cd() {
-	_cdhist_cd "$@"
 }
 
 #
